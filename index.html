@@ -1,0 +1,109 @@
+<!DOCTYPE html>
+<html>
+<head>
+<title>Basketball Flashcards</title>
+<style>
+body {
+  background: #14243a;
+  color: white;
+  font-family: Arial;
+  text-align: center;
+  padding: 30px;
+}
+h1 { color: orange; }
+#card {
+  background: #f28c28;
+  color: white;
+  padding: 60px 20px;
+  border-radius: 20px;
+  max-width: 500px;
+  min-height: 180px;
+  margin: 30px auto;
+  display: flex;
+  align-items: center;
+  justify-content: center;
+  font-size: 25px;
+  cursor: pointer;
+}
+button {
+  padding: 15px 25px;
+  margin: 8px;
+  border: none;
+  border-radius: 10px;
+  font-size: 17px;
+  cursor: pointer;
+}
+</style>
+</head>
+<body>
+
+<h1>🏀 Basketball Flashcards</h1>
+<p id="count"></p>
+
+<div id="card" onclick="flip()">Loading...</div>
+
+<button onclick="previous()">⬅ Previous</button>
+<button onclick="next()">Next ➡</button>
+
+<script>
+const cards = [
+["How many players are on court per team?","5"],
+["How many points is a free throw worth?","1"],
+["What is dribbling?","Bouncing the ball while moving."],
+["How many points is a three-pointer worth?","3"],
+["Who invented basketball?","James Naismith"],
+["What is travelling?","Taking too many steps without dribbling."],
+["What is a rebound?","Getting the ball after a missed shot."],
+["What does NBA stand for?","National Basketball Association"],
+["How many quarters are in an NBA game?","4"],
+["How long is an NBA game?","48 minutes"],
+["What is a triple-double?","Double digits in three statistical categories."],
+["What is a slam dunk?","Putting the ball directly into the hoop from above."],
+["How long is the NBA shot clock?","24 seconds"],
+["What is a fast break?","A quick attack towards the opponent's basket."],
+["What happens in overtime?","Extra time is played when the score is tied."],
+["What is a steal?","Taking possession of the ball from an opponent."],
+["What position usually brings the ball up court?","Point guard"],
+["What is the key or paint?","The area underneath the basket."],
+["What is goaltending?","Illegally interfering with a shot near the basket."],
+["How many seconds to cross half court in the NBA?","8 seconds"],
+["What year does Glory Road take place?","1966"],
+["Who coached Texas Western?","Don Haskins"],
+["Which college did the team represent?","Texas Western College"],
+["What was unusual about the starting five?","All five players were Black."],
+["Who did Texas Western beat in the final?","Kentucky"],
+["What issue did the players face?","Racism and discrimination."],
+["Who coached Kentucky?","Adolph Rupp"],
+["Why was the 1966 final important?","Texas Western made history by winning with five Black starters."],
+["What position did Bobby Joe Hill play?","Point guard"],
+["What message does Glory Road teach?","Equality and equal opportunities for everyone."]
+];
+
+let index = 0;
+let showingAnswer = false;
+
+function display() {
+  document.getElementById("count").textContent =
+    "Card " + (index+1) + " of " + cards.length;
+  document.getElementById("card").textContent =
+    showingAnswer ? cards[index][1] : cards[index][0];
+}
+function flip() {
+  showingAnswer = !showingAnswer;
+  display();
+}
+function next() {
+  index = (index+1) % cards.length;
+  showingAnswer = false;
+  display();
+}
+function previous() {
+  index = (index-1+cards.length) % cards.length;
+  showingAnswer = false;
+  display();
+}
+display();
+</script>
+
+</body>
+</html>
