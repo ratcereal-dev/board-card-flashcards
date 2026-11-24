@@ -1,108 +1,493 @@
+
 <!DOCTYPE html>
-<html>
+<html lang="en">
 <head>
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
 <title>Basketball Flashcards</title>
+
 <style>
+* {
+  box-sizing: border-box;
+}
+
 body {
-  background: #14243a;
+  margin: 0;
+  padding: 20px;
+  min-height: 100vh;
+  background: linear-gradient(135deg, #101d32, #243b55);
   color: white;
-  font-family: Arial;
+  font-family: Arial, sans-serif;
   text-align: center;
-  padding: 30px;
 }
-h1 { color: orange; }
-#card {
-  background: #f28c28;
-  color: white;
-  padding: 60px 20px;
-  border-radius: 20px;
-  max-width: 500px;
-  min-height: 180px;
-  margin: 30px auto;
-  display: flex;
-  align-items: center;
-  justify-content: center;
-  font-size: 25px;
-  cursor: pointer;
+
+h1 {
+  color: #ff982e;
+  font-size: 32px;
+  margin-bottom: 5px;
 }
-button {
-  padding: 15px 25px;
-  margin: 8px;
-  border: none;
+
+.subtitle {
+  color: #cbd5e1;
+  margin-bottom: 25px;
+}
+
+.container {
+  max-width: 550px;
+  margin: auto;
+}
+
+select {
+  padding: 12px;
   border-radius: 10px;
-  font-size: 17px;
+  border: none;
+  font-size: 16px;
+  margin: 10px;
+}
+
+.progress {
+  margin: 20px 0 10px;
+  color: #cbd5e1;
+}
+
+.bar {
+  width: 100%;
+  height: 8px;
+  background: #46566b;
+  border-radius: 10px;
+  overflow: hidden;
+}
+
+.bar-fill {
+  height: 100%;
+  width: 0%;
+  background: #ff982e;
+  transition: width 0.3s;
+}
+
+.card {
+  background: linear-gradient(145deg, #ff9d32, #e66b16);
+  color: white;
+  border-radius: 22px;
+  min-height: 290px;
+  margin: 25px 0;
+  padding: 35px 25px;
+  display: flex;
+  flex-direction: column;
+  justify-content: center;
+  align-items: center;
+  cursor: pointer;
+  box-shadow: 0 12px 30px #0006;
+  user-select: none;
+  transition: background 0.2s;
+  touch-action: pan-y;
+}
+
+.card.answer {
+  background: linear-gradient(145deg, #16865b, #075d49);
+}
+
+.card-label {
+  font-size: 14px;
+  letter-spacing: 3px;
+  font-weight: bold;
+  margin-bottom: 25px;
+  opacity: 0.85;
+}
+
+.card-text {
+  font-size: 25px;
+  font-weight: bold;
+  line-height: 1.5;
+}
+
+.tap {
+  margin-top: 25px;
+  font-size: 13px;
+  opacity: 0.8;
+}
+
+button {
+  background: #ff982e;
+  color: #17243a;
+  border: none;
+  padding: 14px 22px;
+  border-radius: 12px;
+  font-size: 16px;
+  font-weight: bold;
+  margin: 5px;
   cursor: pointer;
 }
+
+button:hover {
+  background: #ffb45f;
+}
+
+.secondary {
+  background: #354b66;
+  color: white;
+}
+
+.secondary:hover {
+  background: #526b89;
+}
+
+.controls {
+  display: flex;
+  justify-content: center;
+  flex-wrap: wrap;
+  gap: 5px;
+}
+
+.hint {
+  color: #aebdce;
+  font-size: 13px;
+  margin-top: 20px;
+}
+
 </style>
 </head>
+
 <body>
 
+<div class="container">
+
 <h1>🏀 Basketball Flashcards</h1>
-<p id="count"></p>
+<p class="subtitle">Test your basketball knowledge!</p>
 
-<div id="card" onclick="flip()">Loading...</div>
+<select id="category" onchange="changeCategory()">
+  <option value="all">All Questions</option>
+  <option value="basketball">Basketball</option>
+  <option value="glory">Glory Road</option>
+</select>
 
-<button onclick="previous()">⬅ Previous</button>
-<button onclick="next()">Next ➡</button>
+<div class="progress" id="progress"></div>
+
+<div class="bar">
+  <div class="bar-fill" id="barFill"></div>
+</div>
+
+<div class="card" id="card">
+  <div class="card-label" id="label">QUESTION</div>
+  <div class="card-text" id="cardText"></div>
+  <div class="tap">Tap to reveal answer</div>
+</div>
+
+<div class="controls">
+  <button class="secondary" onclick="previous()">← Previous</button>
+  <button onclick="flip()">Flip Card ↻</button>
+  <button class="secondary" onclick="next()">Next →</button>
+</div>
+
+<p class="hint">You can also swipe left or right on the card!</p>
+
+<button class="secondary" onclick="restart()">↻ Restart</button>
+
+</div>
 
 <script>
-const cards = [
-["How many players are on court per team?","5"],
-["How many points is a free throw worth?","1"],
-["What is dribbling?","Bouncing the ball while moving."],
-["How many points is a three-pointer worth?","3"],
-["Who invented basketball?","James Naismith"],
-["What is travelling?","Taking too many steps without dribbling."],
-["What is a rebound?","Getting the ball after a missed shot."],
-["What does NBA stand for?","National Basketball Association"],
-["How many quarters are in an NBA game?","4"],
-["How long is an NBA game?","48 minutes"],
-["What is a triple-double?","Double digits in three statistical categories."],
-["What is a slam dunk?","Putting the ball directly into the hoop from above."],
-["How long is the NBA shot clock?","24 seconds"],
-["What is a fast break?","A quick attack towards the opponent's basket."],
-["What happens in overtime?","Extra time is played when the score is tied."],
-["What is a steal?","Taking possession of the ball from an opponent."],
-["What position usually brings the ball up court?","Point guard"],
-["What is the key or paint?","The area underneath the basket."],
-["What is goaltending?","Illegally interfering with a shot near the basket."],
-["How many seconds to cross half court in the NBA?","8 seconds"],
-["What year does Glory Road take place?","1966"],
-["Who coached Texas Western?","Don Haskins"],
-["Which college did the team represent?","Texas Western College"],
-["What was unusual about the starting five?","All five players were Black."],
-["Who did Texas Western beat in the final?","Kentucky"],
-["What issue did the players face?","Racism and discrimination."],
-["Who coached Kentucky?","Adolph Rupp"],
-["Why was the 1966 final important?","Texas Western made history by winning with five Black starters."],
-["What position did Bobby Joe Hill play?","Point guard"],
-["What message does Glory Road teach?","Equality and equal opportunities for everyone."]
+
+const questions = [
+
+{
+category:"basketball",
+q:"How many players from each team are on the court at once?",
+a:"5 players."
+},
+{
+category:"basketball",
+q:"How many points is a free throw worth?",
+a:"1 point."
+},
+{
+category:"basketball",
+q:"What is it called when you bounce the ball while moving?",
+a:"Dribbling."
+},
+{
+category:"basketball",
+q:"What sport is basketball most similar to in terms of scoring?",
+a:"Netball."
+},
+{
+category:"basketball",
+q:"How many points is a shot from behind the three-point line worth?",
+a:"3 points."
+},
+{
+category:"basketball",
+q:"Who invented basketball?",
+a:"James Naismith."
+},
+{
+category:"basketball",
+q:"What do players shoot the ball into?",
+a:"A hoop or basket."
+},
+{
+category:"basketball",
+q:"What is it called when a player takes too many steps without dribbling?",
+a:"Travelling."
+},
+{
+category:"basketball",
+q:"What is the main objective of basketball?",
+a:"Score more points than the opposing team."
+},
+{
+category:"basketball",
+q:"How many teams play in a basketball game?",
+a:"2 teams."
+},
+{
+category:"basketball",
+q:"How long is a standard NBA game?",
+a:"48 minutes, divided into four 12-minute quarters."
+},
+{
+category:"basketball",
+q:"What is a triple-double?",
+a:"Getting double digits in three statistical categories, such as points, rebounds and assists."
+},
+{
+category:"basketball",
+q:"What is a rebound?",
+a:"Getting possession of the ball after a missed shot."
+},
+{
+category:"basketball",
+q:"What does NBA stand for?",
+a:"National Basketball Association."
+},
+{
+category:"basketball",
+q:"What is a slam dunk?",
+a:"Jumping and putting the ball directly through the hoop."
+},
+{
+category:"basketball",
+q:"What position usually brings the ball up the court?",
+a:"Point guard."
+},
+{
+category:"basketball",
+q:"What happens when a player commits five fouls in an FIBA game?",
+a:"They foul out and cannot play for the rest of the game."
+},
+{
+category:"basketball",
+q:"How many points is a shot inside the three-point line worth?",
+a:"2 points."
+},
+{
+category:"basketball",
+q:"What is a shot clock?",
+a:"A timer that limits how long a team has to attempt a shot."
+},
+{
+category:"basketball",
+q:"What is it called when a player steals the ball from an opponent?",
+a:"A steal."
+},
+{
+category:"basketball",
+q:"What year was basketball invented?",
+a:"1891."
+},
+{
+category:"basketball",
+q:"Which NBA team has won the most championships?",
+a:"The Boston Celtics."
+},
+{
+category:"basketball",
+q:"Who is known as King James?",
+a:"LeBron James."
+},
+{
+category:"basketball",
+q:"What is the name of the NBA trophy awarded to the champions?",
+a:"The Larry O'Brien Championship Trophy."
+},
+{
+category:"basketball",
+q:"What is goaltending?",
+a:"Illegally interfering with a shot near the basket."
+},
+{
+category:"basketball",
+q:"How many seconds does an NBA team have to get the ball across half-court?",
+a:"8 seconds."
+},
+{
+category:"basketball",
+q:"What country invented basketball?",
+a:"The United States of America."
+},
+{
+category:"basketball",
+q:"What is an alley-oop?",
+a:"A player catches a pass in the air and scores, often with a dunk."
+},
+{
+category:"basketball",
+q:"Who holds the NBA all-time scoring record?",
+a:"LeBron James."
+},
+{
+category:"basketball",
+q:"What is the name of the annual NBA All-Star event?",
+a:"The NBA All-Star Game."
+},
+
+{
+category:"glory",
+q:"What year does the movie Glory Road take place?",
+a:"1966."
+},
+{
+category:"glory",
+q:"Who was the basketball coach of the Texas Western team?",
+a:"Don Haskins."
+},
+{
+category:"glory",
+q:"What university does the team play for?",
+a:"Texas Western College."
+},
+{
+category:"glory",
+q:"What was unusual about the starting five players?",
+a:"All five starting players were Black."
+},
+{
+category:"glory",
+q:"Which team did Texas Western beat in the 1966 championship final?",
+a:"The University of Kentucky."
+},
+{
+category:"glory",
+q:"What was the main issue the players faced during the movie?",
+a:"Racism and discrimination."
+},
+{
+category:"glory",
+q:"What was the name of the coach who led Kentucky?",
+a:"Adolph Rupp."
+},
+{
+category:"glory",
+q:"Why was the 1966 championship game so important?",
+a:"Texas Western made history by starting five Black players and winning the national championship."
+},
+{
+category:"glory",
+q:"What position did Bobby Joe Hill play?",
+a:"Point guard."
+},
+{
+category:"glory",
+q:"What message does the movie teach about racism and equality?",
+a:"Everyone deserves equal opportunities regardless of race."
+}
+
 ];
 
+let selectedQuestions = [...questions];
 let index = 0;
 let showingAnswer = false;
 
 function display() {
-  document.getElementById("count").textContent =
-    "Card " + (index+1) + " of " + cards.length;
-  document.getElementById("card").textContent =
-    showingAnswer ? cards[index][1] : cards[index][0];
+  const item = selectedQuestions[index];
+
+  document.getElementById("cardText").textContent =
+    showingAnswer ? item.a : item.q;
+
+  document.getElementById("label").textContent =
+    showingAnswer ? "ANSWER" : "QUESTION";
+
+  document.getElementById("card").classList.toggle(
+    "answer", showingAnswer
+  );
+
+  document.getElementById("progress").textContent =
+    "Card " + (index + 1) + " of " + selectedQuestions.length;
+
+  document.getElementById("barFill").style.width =
+    ((index + 1) / selectedQuestions.length * 100) + "%";
 }
+
 function flip() {
   showingAnswer = !showingAnswer;
   display();
 }
+
 function next() {
-  index = (index+1) % cards.length;
+  index = (index + 1) % selectedQuestions.length;
   showingAnswer = false;
   display();
 }
+
 function previous() {
-  index = (index-1+cards.length) % cards.length;
+  index = (index - 1 + selectedQuestions.length)
+    % selectedQuestions.length;
   showingAnswer = false;
   display();
 }
+
+function restart() {
+  index = 0;
+  showingAnswer = false;
+  display();
+}
+
+function changeCategory() {
+  const category = document.getElementById("category").value;
+
+  if (category === "all") {
+    selectedQuestions = [...questions];
+  } else {
+    selectedQuestions = questions.filter(
+      item => item.category === category
+    );
+  }
+
+  restart();
+}
+
+// Swipe support
+let startX = 0;
+
+const card = document.getElementById("card");
+
+card.addEventListener("touchstart", function(e) {
+  startX = e.changedTouches[0].screenX;
+}, {passive:true});
+
+card.addEventListener("touchend", function(e) {
+  const endX = e.changedTouches[0].screenX;
+  const distance = endX - startX;
+
+  if (Math.abs(distance) > 50) {
+    if (distance < 0) {
+      next();
+    } else {
+      previous();
+    }
+  }
+}, {passive:true});
+
+// Keyboard support
+document.addEventListener("keydown", function(e) {
+  if (e.key === "ArrowRight") next();
+  if (e.key === "ArrowLeft") previous();
+  if (e.key === " " || e.key === "Enter") flip();
+});
+
+card.addEventListener("click", flip);
+
 display();
+
 </script>
 
 </body>
